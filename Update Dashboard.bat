@@ -39,11 +39,12 @@ if errorlevel 1 (
   for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH-mm"') do set "STAMP=%%i"
   git -C "%SITE_DIR%" commit -m "Refresh stock analytics %STAMP%"
   if errorlevel 1 goto :failed
-  git -C "%SITE_DIR%" push origin main
-  if errorlevel 1 goto :failed
 ) else (
   echo No stock-data changes were detected. Nothing new to publish.
 )
+
+git -C "%SITE_DIR%" push origin main
+if errorlevel 1 goto :failed
 
 echo.
 echo [4/4] Opening the published dashboard...
