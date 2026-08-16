@@ -10,6 +10,8 @@ SOURCE = Path(r"D:\Pyhton code\FINAL Scripts\Website source")
 SITE = Path(__file__).resolve().parent
 PUBLIC = SITE / "public"
 OUTPUT = PUBLIC / "articles.json"
+ARTICLE_IMAGES = PUBLIC / "articles"
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 
 
 def slugify(value):
@@ -22,6 +24,7 @@ def main():
         raise SystemExit(f"ERROR: Article source folder not found: {SOURCE}")
 
     PUBLIC.mkdir(parents=True, exist_ok=True)
+    ARTICLE_IMAGES.mkdir(parents=True, exist_ok=True)
     articles = []
     for path in sorted(SOURCE.glob("*.txt"), key=lambda p: p.stat().st_mtime, reverse=True):
         text = path.read_text(encoding="utf-8-sig").strip()
@@ -35,6 +38,7 @@ def main():
         body = re.sub(r"\n{3,}", "\n\n", body)
         preview = re.sub(r"\s+", " ", body)[:240].strip()
         articles.append({
+            "kind": "text",
             "slug": slugify(title),
             "title": title,
             "preview": preview,
@@ -44,6 +48,29 @@ def main():
             "category": "Education",
             "reading_minutes": max(1, round(len(body.split()) / 220)),
         })
+
+    for path in sorted(SOURCE.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+        if not path.is_file() or path.suffix.lower() not in IMAGE_EXTENSIONS:
+            continue
+        if path.stem.lower() == "background image":
+            continue
+        title = path.stem
+        destination = ARTICLE_IMAGES / f"{slugify(title)}{path.suffix.lower()}"
+        shutil.copy2(path, destination)
+        articles.append({
+            "kind": "image",
+            "slug": slugify(title),
+            "title": title,
+            "preview": f"A visual market article from @TheWealthVolume: {title}.",
+            "body": "",
+            "image": f"public/articles/{destination.name}",
+            "source_file": path.name,
+            "published": datetime.fromtimestamp(path.stat().st_mtime).astimezone().isoformat(timespec="seconds"),
+            "category": "Visual Article",
+            "reading_minutes": 1,
+        })
+
+    articles.sort(key=lambda article: article["published"], reverse=True)
 
     background = None
     for candidate in SOURCE.iterdir():
