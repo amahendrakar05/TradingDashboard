@@ -50,9 +50,13 @@ nav{position:relative;z-index:2;display:flex;justify-content:space-between;align
 .article-body h2{margin:44px 0 12px;padding-top:10px;font:800 27px/1.15 Inter,system-ui,sans-serif;letter-spacing:-.035em}
 .article-body p{margin:0 0 22px}
 .article-body .lead{margin-bottom:32px;color:#334b60;font-size:21px;line-height:1.62}
+.article-body .lead:first-letter{float:left;margin:8px 9px 0 0;color:#176d9a;font:800 62px/.72 Georgia,"Times New Roman",serif}
 .article-body .kicker{margin:-4px 0 20px;color:#19739e;font:800 12px/1.4 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.09em}
 .article-body .formula{padding:18px 20px;border-left:4px solid #1c86b8;border-radius:0 10px 10px 0;background:#edf7fb;font:750 17px/1.5 ui-monospace,Consolas,monospace}
 .article-body .warning{padding:17px 19px;border:1px solid #f1d496;border-radius:10px;background:#fff5da;color:#76520d;font-family:Inter,system-ui,sans-serif}
+.article-body blockquote{position:relative;margin:34px 0;padding:10px 0 10px 28px;border-left:5px solid #2fa5d4;color:#153f5a;font:700 25px/1.4 Inter,system-ui,sans-serif;letter-spacing:-.025em}
+.article-body .subsection{margin:18px 0;padding:18px 20px;border-radius:12px;background:#f4f8fb;font-family:Inter,system-ui,sans-serif}
+.article-body .subsection b{display:block;margin-bottom:6px;color:#176d9a;font-size:15px}
 .article-body .direction{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;margin:12px 0;padding:17px 19px;border:1px solid var(--line);border-radius:12px;background:#f7fafc;font-family:Inter,system-ui,sans-serif}
 .article-body .direction b{color:#176d9a}
 .article-body ul{margin:12px 0 26px;padding:15px 18px 15px 40px;border-radius:11px;background:#f7fafc;font-family:Inter,system-ui,sans-serif}
@@ -86,7 +90,7 @@ let articles=[];const $=id=>document.getElementById(id),esc=v=>String(v??'').rep
 function renderCards(){$('article-grid').innerHTML=articles.map((a,i)=>`<article class="article-card" data-index="${i}"><div class="article-meta"><span>${esc(a.category)}</span><span>${a.reading_minutes} min read</span></div><h3>${esc(a.title)}</h3><p>${esc(a.preview)}...</p><span class="read">Read full article →</span></article>`).join('')||'<p>No articles found. Add .txt files to the Website source folder and run the updater.</p>';document.querySelectorAll('[data-index]').forEach(card=>card.onclick=()=>openArticle(articles[Number(card.dataset.index)]))}
 function openArticle(a){$('reader-category').textContent=a.category;$('reader-title').textContent=a.title;$('reader-date').textContent=new Date(a.published).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});$('reader-time').textContent=`${a.reading_minutes} min read`;$('article-body').innerHTML=formatBody(a.body);$('reader').classList.add('open');history.replaceState(null,'','#'+a.slug);$('reader').scrollIntoView({behavior:'smooth',block:'start'})}
 function formatBody(body){
-  const headings=new Set(['Simple example','Long vs. Short','What is margin?','Futures are marked to market','Why do futures exist?','Micro futures are useful to understand','Futures vs. Stocks','The easiest way to remember it 🧠']);
+  const headings=new Set(['The contract multiplier changes everything','Long and short positions','Margin is collateral—not the purchase price','Daily settlement keeps risk moving','Why futures exist','Micro futures offer smaller exposure','Futures and stocks are not the same','The calculation every trader should know','The bottom line']);
   const blocks=body.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
   return blocks.map((block,index)=>{
     if(block.includes('\t')){
@@ -97,11 +101,13 @@ function formatBody(body){
     }
     if(headings.has(block))return `<h2>${esc(block)}</h2>`;
     if(block.startsWith('⚠'))return `<p class="warning">${esc(block)}</p>`;
+    if(block.startsWith('>'))return `<blockquote>${esc(block.slice(1).trim())}</blockquote>`;
+    if(/^\d\. /.test(block)){const lines=block.split('\n');return `<div class="subsection"><b>${esc(lines.shift())}</b><span>${esc(lines.join(' '))}</span></div>`;}
     if(/^(LONG futures|SHORT futures)/.test(block)){
       const lines=block.split('\n');return `<div class="direction"><b>${esc(lines.shift())}</b><span>${esc(lines.join(' '))}</span></div>`;
     }
-    if(/^(Futures =|Price movement|Contract value|[+−-]?\d+ points)/.test(block))return `<p class="formula">${esc(block).replace(/\n/g,'<br>')}</p>`;
-    if(block==='So:'||block==="It's very straightforward:")return `<div class="kicker">${esc(block.replace(':',''))}</div>`;
+    if(/^(Futures =|Price movement|Contract value|P&L =|[+−-]?\d+ points)/.test(block))return `<p class="formula">${esc(block).replace(/\n/g,'<br>')}</p>`;
+    if(block==='So:'||block==='For example:'||block==="It's very straightforward:")return `<div class="kicker">${esc(block.replace(':',''))}</div>`;
     const lines=block.split('\n').map(line=>line.trim()).filter(Boolean);
     if(lines.length>2&&lines.every(line=>line.length<80))return `<ul>${lines.map(line=>`<li>${esc(line)}</li>`).join('')}</ul>`;
     return `<p class="${index===0?'lead':''}">${esc(lines.join(' '))}</p>`;
