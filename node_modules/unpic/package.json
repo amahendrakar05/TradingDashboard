@@ -1,0 +1,173 @@
+{
+  "name": "unpic",
+  "version": "4.2.2",
+  "description": "Universal image CDN translator",
+  "homepage": "https://unpic.pics/lib",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascorbic/unpic.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ascorbic/unpic/issues"
+  },
+  "main": "./script/mod.js",
+  "module": "./esm/mod.js",
+  "exports": {
+    ".": {
+      "import": "./esm/mod.js",
+      "require": "./script/mod.js"
+    },
+    "./async": {
+      "import": "./esm/src/async.js",
+      "require": "./script/src/async.js"
+    },
+    "./detect": {
+      "import": "./esm/src/detect.js",
+      "require": "./script/src/detect.js"
+    },
+    "./extract": {
+      "import": "./esm/src/extract.js",
+      "require": "./script/src/extract.js"
+    },
+    "./types": {
+      "import": "./esm/src/types.js",
+      "require": "./script/src/types.js"
+    },
+    "./transform": {
+      "import": "./esm/src/transform.js",
+      "require": "./script/src/transform.js"
+    },
+    "./utils": {
+      "import": "./esm/src/utils.js",
+      "require": "./script/src/utils.js"
+    },
+    "./providers/astro": {
+      "import": "./esm/src/providers/astro.js",
+      "require": "./script/src/providers/astro.js"
+    },
+    "./providers/scene7": {
+      "import": "./esm/src/providers/scene7.js",
+      "require": "./script/src/providers/scene7.js"
+    },
+    "./providers/cloudflare_images": {
+      "import": "./esm/src/providers/cloudflare_images.js",
+      "require": "./script/src/providers/cloudflare_images.js"
+    },
+    "./providers/uploadcare": {
+      "import": "./esm/src/providers/uploadcare.js",
+      "require": "./script/src/providers/uploadcare.js"
+    },
+    "./providers/shopify": {
+      "import": "./esm/src/providers/shopify.js",
+      "require": "./script/src/providers/shopify.js"
+    },
+    "./providers/nextjs": {
+      "import": "./esm/src/providers/nextjs.js",
+      "require": "./script/src/providers/nextjs.js"
+    },
+    "./providers/wsrv": {
+      "import": "./esm/src/providers/wsrv.js",
+      "require": "./script/src/providers/wsrv.js"
+    },
+    "./providers/kontent.ai": {
+      "import": "./esm/src/providers/kontent.ai.js",
+      "require": "./script/src/providers/kontent.ai.js"
+    },
+    "./providers/imgix": {
+      "import": "./esm/src/providers/imgix.js",
+      "require": "./script/src/providers/imgix.js"
+    },
+    "./providers/ipx": {
+      "import": "./esm/src/providers/ipx.js",
+      "require": "./script/src/providers/ipx.js"
+    },
+    "./providers/vercel": {
+      "import": "./esm/src/providers/vercel.js",
+      "require": "./script/src/providers/vercel.js"
+    },
+    "./providers/hygraph": {
+      "import": "./esm/src/providers/hygraph.js",
+      "require": "./script/src/providers/hygraph.js"
+    },
+    "./providers/cloudinary": {
+      "import": "./esm/src/providers/cloudinary.js",
+      "require": "./script/src/providers/cloudinary.js"
+    },
+    "./providers/storyblok": {
+      "import": "./esm/src/providers/storyblok.js",
+      "require": "./script/src/providers/storyblok.js"
+    },
+    "./providers/keycdn": {
+      "import": "./esm/src/providers/keycdn.js",
+      "require": "./script/src/providers/keycdn.js"
+    },
+    "./providers/appwrite": {
+      "import": "./esm/src/providers/appwrite.js",
+      "require": "./script/src/providers/appwrite.js"
+    },
+    "./providers/contentful": {
+      "import": "./esm/src/providers/contentful.js",
+      "require": "./script/src/providers/contentful.js"
+    },
+    "./providers/contentstack": {
+      "import": "./esm/src/providers/contentstack.js",
+      "require": "./script/src/providers/contentstack.js"
+    },
+    "./providers/imageengine": {
+      "import": "./esm/src/providers/imageengine.js",
+      "require": "./script/src/providers/imageengine.js"
+    },
+    "./providers/supabase": {
+      "import": "./esm/src/providers/supabase.js",
+      "require": "./script/src/providers/supabase.js"
+    },
+    "./providers/cloudflare": {
+      "import": "./esm/src/providers/cloudflare.js",
+      "require": "./script/src/providers/cloudflare.js"
+    },
+    "./providers/imagekit": {
+      "import": "./esm/src/providers/imagekit.js",
+      "require": "./script/src/providers/imagekit.js"
+    },
+    "./providers/bunny": {
+      "import": "./esm/src/providers/bunny.js",
+      "require": "./script/src/providers/bunny.js"
+    },
+    "./providers/builder.io": {
+      "import": "./esm/src/providers/builder.io.js",
+      "require": "./script/src/providers/builder.io.js"
+    },
+    "./providers/cloudimage": {
+      "import": "./esm/src/providers/cloudimage.js",
+      "require": "./script/src/providers/cloudimage.js"
+    },
+    "./providers/netlify": {
+      "import": "./esm/src/providers/netlify.js",
+      "require": "./script/src/providers/netlify.js"
+    },
+    "./providers/types": {
+      "import": "./esm/src/providers/types.js",
+      "require": "./script/src/providers/types.js"
+    },
+    "./providers/wordpress": {
+      "import": "./esm/src/providers/wordpress.js",
+      "require": "./script/src/providers/wordpress.js"
+    },
+    "./providers/directus": {
+      "import": "./esm/src/providers/directus.js",
+      "require": "./script/src/providers/directus.js"
+    }
+  },
+  "scripts": {
+    "test": "node test_runner.js"
+  },
+  "sideEffects": false,
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "picocolors": "^1.0.0",
+    "@deno/shim-deno-test": "~0.5.0",
+    "@unpic/pixels": "latest"
+  },
+  "_generatedBy": "dnt@dev"
+}

@@ -1,0 +1,104 @@
+import type { ImageCdn, URLExtractor, URLGenerator, URLTransformer } from "../types.js";
+import type { AppwriteOperations } from "./appwrite.js";
+import type { AstroOperations, AstroOptions } from "./astro.js";
+import type { BuilderOperations } from "./builder.io.js";
+import type { BunnyOperations } from "./bunny.js";
+import type { CloudflareOperations, CloudflareOptions } from "./cloudflare.js";
+import type { CloudflareImagesOperations, CloudflareImagesOptions } from "./cloudflare_images.js";
+import type { CloudimageOperations, CloudimageOptions } from "./cloudimage.js";
+import type { CloudinaryOperations, CloudinaryOptions } from "./cloudinary.js";
+import type { ContentfulOperations } from "./contentful.js";
+import type { ContentstackOperations, ContentstackOptions } from "./contentstack.js";
+import type { DirectusOperations } from "./directus.js";
+import type { HygraphOperations, HygraphOptions } from "./hygraph.js";
+import type { ImageEngineOperations } from "./imageengine.js";
+import type { ImageKitOperations } from "./imagekit.js";
+import type { ImgixOperations } from "./imgix.js";
+import type { IPXOperations, IPXOptions } from "./ipx.js";
+import type { KeyCDNOperations } from "./keycdn.js";
+import type { KontentAiOperations } from "./kontent.ai.js";
+import type { NetlifyOperations, NetlifyOptions } from "./netlify.js";
+import type { NextjsOperations, NextjsOptions } from "./nextjs.js";
+import type { Scene7Operations } from "./scene7.js";
+import type { ShopifyOperations } from "./shopify.js";
+import type { StoryblokOperations } from "./storyblok.js";
+import type { SupabaseOperations } from "./supabase.js";
+import type { UploadcareOperations, UploadcareOptions } from "./uploadcare.js";
+import type { VercelOperations, VercelOptions } from "./vercel.js";
+import type { WordPressOperations } from "./wordpress.js";
+import type { WsrvOperations } from "./wsrv.js";
+export interface ProviderOperations {
+    appwrite: AppwriteOperations;
+    astro: AstroOperations;
+    "builder.io": BuilderOperations;
+    bunny: BunnyOperations;
+    cloudflare: CloudflareOperations;
+    cloudflare_images: CloudflareImagesOperations;
+    cloudimage: CloudimageOperations;
+    cloudinary: CloudinaryOperations;
+    contentful: ContentfulOperations;
+    contentstack: ContentstackOperations;
+    directus: DirectusOperations;
+    hygraph: HygraphOperations;
+    imageengine: ImageEngineOperations;
+    imagekit: ImageKitOperations;
+    imgix: ImgixOperations;
+    ipx: IPXOperations;
+    keycdn: KeyCDNOperations;
+    "kontent.ai": KontentAiOperations;
+    netlify: NetlifyOperations;
+    nextjs: NextjsOperations;
+    scene7: Scene7Operations;
+    shopify: ShopifyOperations;
+    storyblok: StoryblokOperations;
+    supabase: SupabaseOperations;
+    uploadcare: UploadcareOperations;
+    vercel: VercelOperations;
+    wordpress: WordPressOperations;
+    wsrv: WsrvOperations;
+}
+export interface ProviderOptions {
+    appwrite: undefined;
+    astro: AstroOptions;
+    "builder.io": undefined;
+    bunny: undefined;
+    cloudflare: CloudflareOptions;
+    cloudflare_images: CloudflareImagesOptions;
+    cloudimage: CloudimageOptions;
+    cloudinary: CloudinaryOptions;
+    contentful: undefined;
+    contentstack: ContentstackOptions;
+    directus: undefined;
+    hygraph: HygraphOptions;
+    imageengine: undefined;
+    imagekit: undefined;
+    imgix: undefined;
+    ipx: IPXOptions;
+    keycdn: undefined;
+    "kontent.ai": undefined;
+    netlify: NetlifyOptions;
+    nextjs: NextjsOptions;
+    scene7: undefined;
+    shopify: undefined;
+    storyblok: undefined;
+    supabase: undefined;
+    uploadcare: UploadcareOptions;
+    vercel: VercelOptions;
+    wordpress: undefined;
+    wsrv: undefined;
+}
+export type URLExtractorMap = {
+    [K in ImageCdn]: URLExtractor<K>;
+};
+export type URLGeneratorMap = {
+    [K in ImageCdn]: URLGenerator<K>;
+};
+export type URLTransformerMap = {
+    [K in ImageCdn]: URLTransformer<K>;
+};
+export type ProviderModule<TCDN extends ImageCdn> = {
+    generate: URLGenerator<TCDN>;
+    extract: URLExtractor<TCDN>;
+    transform?: URLTransformer<TCDN>;
+};
+//# sourceMappingURL=types.d.ts.map

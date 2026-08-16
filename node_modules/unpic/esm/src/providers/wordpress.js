@@ -1,0 +1,32 @@
+import { createExtractAndGenerate, createOperationsHandlers, toCanonicalUrlString, toUrl, } from "../utils.js";
+const { operationsGenerator, operationsParser } = createOperationsHandlers({
+    keyMap: {
+        width: "w",
+        height: "h",
+    },
+    defaults: {
+        crop: "1",
+    },
+});
+export const generate = (src, operations) => {
+    const url = toUrl(src);
+    const { crop } = operations;
+    if (typeof crop !== "undefined" && crop !== "0") {
+        operations.crop = crop ? "1" : "0";
+    }
+    url.search = operationsGenerator(operations);
+    return toCanonicalUrlString(url);
+};
+export const extract = (url) => {
+    const parsedUrl = toUrl(url);
+    const operations = operationsParser(parsedUrl);
+    if (operations.crop !== undefined) {
+        operations.crop = operations.crop === "1";
+    }
+    parsedUrl.search = "";
+    return {
+        src: toCanonicalUrlString(parsedUrl),
+        operations,
+    };
+};
+export const transform = createExtractAndGenerate(extract, generate);

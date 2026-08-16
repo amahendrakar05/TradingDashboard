@@ -1,0 +1,216 @@
+{
+  "name": "vinext",
+  "version": "1.0.0-beta.2",
+  "description": "Run Next.js apps on Vite. Drop-in replacement for the next CLI.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cloudflare/vinext.git"
+  },
+  "bin": {
+    "vinext": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cache": {
+      "types": "./dist/cache.d.ts",
+      "import": "./dist/cache.js"
+    },
+    "./types": {
+      "types": "./dist/shims/next-shims-public.d.ts"
+    },
+    "./types/augmentations": {
+      "types": "./dist/shims/next-shims-augmentations.d.ts"
+    },
+    "./shims/*": {
+      "types": "./dist/shims/*.d.ts",
+      "import": "./dist/shims/*.js"
+    },
+    "./server/prod-server": {
+      "types": "./dist/server/prod-server.d.ts",
+      "import": "./dist/server/prod-server.js"
+    },
+    "./server/pages-i18n": {
+      "types": "./dist/server/pages-i18n.d.ts",
+      "import": "./dist/server/pages-i18n.js"
+    },
+    "./server/image-optimization": {
+      "types": "./dist/server/image-optimization.d.ts",
+      "import": "./dist/server/image-optimization.js"
+    },
+    "./server/request-pipeline": {
+      "types": "./dist/server/request-pipeline.d.ts",
+      "import": "./dist/server/request-pipeline.js"
+    },
+    "./server/pages-request-pipeline": {
+      "types": "./dist/server/pages-request-pipeline.d.ts",
+      "import": "./dist/server/pages-request-pipeline.js"
+    },
+    "./server/pages-client-assets": {
+      "types": "./dist/server/pages-client-assets.d.ts",
+      "import": "./dist/server/pages-client-assets.js"
+    },
+    "./server/fetch-handler": {
+      "types": "./dist/server/fetch-handler.d.ts",
+      "import": "./dist/server/fetch-handler.js"
+    },
+    "./server/app-router-entry": {
+      "types": "./dist/server/app-router-entry.d.ts",
+      "import": "./dist/server/app-router-entry.js"
+    },
+    "./server/pages-router-entry": {
+      "types": "./dist/server/pages-router-entry.d.ts",
+      "import": "./dist/server/pages-router-entry.js"
+    },
+    "./internal/server/headers": {
+      "types": "./dist/server/headers.d.ts",
+      "import": "./dist/server/headers.js"
+    },
+    "./internal/server/isr-cache": {
+      "types": "./dist/server/isr-cache.d.ts",
+      "import": "./dist/server/isr-cache.js"
+    },
+    "./internal/server/app-page-cache": {
+      "types": "./dist/server/app-page-cache.d.ts",
+      "import": "./dist/server/app-page-cache.js"
+    },
+    "./internal/server/prerender-manifest": {
+      "types": "./dist/server/prerender-manifest.d.ts",
+      "import": "./dist/server/prerender-manifest.js"
+    },
+    "./internal/server/pregenerated-concrete-paths": {
+      "types": "./dist/server/pregenerated-concrete-paths.d.ts",
+      "import": "./dist/server/pregenerated-concrete-paths.js"
+    },
+    "./internal/build/run-prerender": {
+      "types": "./dist/build/run-prerender.d.ts",
+      "import": "./dist/build/run-prerender.js"
+    },
+    "./internal/build/prerender-paths": {
+      "types": "./dist/build/prerender-paths.d.ts",
+      "import": "./dist/build/prerender-paths.js"
+    },
+    "./internal/cache-adapters": {
+      "types": "./dist/cache/cache-adapters-virtual.d.ts",
+      "import": "./dist/cache/cache-adapters-virtual.js"
+    },
+    "./internal/init": {
+      "types": "./dist/init.d.ts",
+      "import": "./dist/init.js"
+    },
+    "./internal/init-platform": {
+      "types": "./dist/init-platform.d.ts",
+      "import": "./dist/init-platform.js"
+    },
+    "./internal/config/dotenv": {
+      "types": "./dist/config/dotenv.d.ts",
+      "import": "./dist/config/dotenv.js"
+    },
+    "./internal/config/next-config": {
+      "types": "./dist/config/next-config.d.ts",
+      "import": "./dist/config/next-config.js"
+    },
+    "./internal/config/prerender": {
+      "types": "./dist/config/prerender.d.ts",
+      "import": "./dist/config/prerender.js"
+    },
+    "./server/app-rsc-handler": {
+      "types": "./dist/server/app-rsc-handler.d.ts",
+      "import": "./dist/server/app-rsc-handler.js"
+    },
+    "./config/config-matchers": {
+      "types": "./dist/config/config-matchers.d.ts",
+      "import": "./dist/config/config-matchers.js"
+    },
+    "./server/worker-utils": {
+      "types": "./dist/server/worker-utils.d.ts",
+      "import": "./dist/server/worker-utils.js"
+    },
+    "./server/http-error-responses": {
+      "types": "./dist/server/http-error-responses.d.ts",
+      "import": "./dist/server/http-error-responses.js"
+    },
+    "./utils/asset-prefix": {
+      "types": "./dist/utils/asset-prefix.d.ts",
+      "import": "./dist/utils/asset-prefix.js"
+    },
+    "./utils/base-path": {
+      "types": "./dist/utils/base-path.d.ts",
+      "import": "./dist/utils/base-path.js"
+    },
+    "./utils/query": {
+      "types": "./dist/utils/query.d.ts",
+      "import": "./dist/utils/query.js"
+    },
+    "./internal/utils/project": {
+      "types": "./dist/utils/project.d.ts",
+      "import": "./dist/utils/project.js"
+    },
+    "./internal/utils/prerender-output-paths": {
+      "types": "./dist/utils/prerender-output-paths.d.ts",
+      "import": "./dist/utils/prerender-output-paths.js"
+    },
+    "./internal/utils/hash": {
+      "types": "./dist/utils/hash.d.ts",
+      "import": "./dist/utils/hash.js"
+    }
+  },
+  "dependencies": {
+    "@unpic/react": "^1.0.2",
+    "@vercel/og": "^0.8.6",
+    "image-size": "2.0.2",
+    "ipaddr.js": "^2.1.0",
+    "magic-string": "^0.30.21",
+    "vite-plugin-commonjs": "^0.10.4",
+    "web-vitals": "^4.2.4",
+    "@vinext/types": "^1.0.0-beta.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "@types/react": "^19.2.16",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitejs/plugin-rsc": "^0.5.27",
+    "am-i-vibing": "^0.5.0",
+    "pathslash": "^0.1.0",
+    "react-server-dom-webpack": "^19.2.7",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2",
+    "vite-plus": "0.2.2"
+  },
+  "peerDependencies": {
+    "@mdx-js/rollup": "^3.0.0",
+    "@vitejs/plugin-react": "^5.1.4 || ^6.0.0",
+    "@vitejs/plugin-rsc": "^0.5.26",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-server-dom-webpack": "^19.2.6",
+    "vite": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@mdx-js/rollup": {
+      "optional": true
+    },
+    "@vitejs/plugin-rsc": {
+      "optional": true
+    },
+    "react-server-dom-webpack": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "vp pack --watch"
+  }
+}

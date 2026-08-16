@@ -1,0 +1,52 @@
+{
+  "name": "@unpic/core",
+  "version": "1.0.3",
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ascorbic/unpic-img",
+    "directory": "packages/core"
+  },
+  "homepage": "https://unpic.pics/img",
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "vitest": "^3.0.2"
+  },
+  "dependencies": {
+    "unpic": "^4.2.2"
+  },
+  "main": "./dist/auto.js",
+  "module": "./dist/auto.mjs",
+  "types": "./dist/auto.d.ts",
+  "files": [
+    "dist",
+    "base.d.ts"
+  ],
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/auto.d.ts",
+        "default": "./dist/auto.js"
+      },
+      "import": {
+        "types": "./dist/auto.d.mts",
+        "default": "./dist/auto.mjs"
+      }
+    },
+    "./base": {
+      "require": {
+        "types": "./dist/base.d.ts",
+        "default": "./dist/base.js"
+      },
+      "import": {
+        "types": "./dist/base.d.mts",
+        "default": "./dist/base.mjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup src/auto.ts src/base.ts --format cjs,esm --dts --clean",
+    "test": "vitest run"
+  }
+}

@@ -1,0 +1,33 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SupportedProviders = void 0;
+exports.SupportedProviders = {
+    appwrite: "Appwrite",
+    astro: "Astro image service",
+    "builder.io": "Builder.io",
+    bunny: "Bunny.net",
+    cloudflare: "Cloudflare",
+    cloudflare_images: "Cloudflare Images",
+    cloudimage: "Cloudimage",
+    cloudinary: "Cloudinary",
+    contentful: "Contentful",
+    contentstack: "Contentstack",
+    directus: "Directus",
+    hygraph: "Hygraph",
+    imageengine: "ImageEngine",
+    imagekit: "ImageKit",
+    imgix: "Imgix",
+    ipx: "IPX",
+    keycdn: "KeyCDN",
+    "kontent.ai": "Kontent.ai",
+    netlify: "Netlify Image CDN",
+    nextjs: "Next.js image service",
+    scene7: "Adobe Dynamic Media / Scene7",
+    shopify: "Shopify",
+    storyblok: "Storyblok",
+    supabase: "Supabase",
+    uploadcare: "Uploadcare",
+    vercel: "Vercel",
+    wordpress: "WordPress",
+    wsrv: "wsrv.nl",
+};

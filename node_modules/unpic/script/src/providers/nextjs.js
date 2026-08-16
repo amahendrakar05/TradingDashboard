@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.transform = exports.extract = exports.generate = void 0;
+const vercel_js_1 = require("./vercel.js");
+const utils_js_1 = require("../utils.js");
+const generate = (src, operations, options = {}) => (0, vercel_js_1.generate)(src, operations, { ...options, prefix: "_next" });
+exports.generate = generate;
+const extract = (url, options) => (0, vercel_js_1.extract)(url, options);
+exports.extract = extract;
+exports.transform = (0, utils_js_1.createExtractAndGenerate)(exports.extract, exports.generate);

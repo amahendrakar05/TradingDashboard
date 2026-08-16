@@ -1,0 +1,186 @@
+import { addBasePathToPathname, hasBasePath, stripBasePath } from "../utils/base-path.js";
+import { MIDDLEWARE_SKIP_HEADER } from "../utils/protocol-headers.js";
+import { NEXTJS_DEPLOYMENT_ID_HEADER } from "./headers.js";
+//#region src/server/pages-data-route.ts
+/**
+* Helpers for the Pages Router `/_next/data/{buildId}/{...page}.json` endpoint.
+*
+* Next.js uses this endpoint for client-side navigations in the Pages Router:
+* `next/link` and `router.push()` fetch `pageProps` from this URL instead of
+* doing a full HTML navigation. The server must:
+*   1. Match the URL pattern and extract the page pathname (with the buildId
+*      and `.json` extension removed, locale prefix preserved).
+*   2. Normalize the URL BEFORE middleware runs so middleware sees the page
+*      path (e.g. `/about`) rather than the raw `/_next/data/.../about.json`.
+*   3. Invoke the same `getServerSideProps` / `getStaticProps` machinery as
+*      the HTML page and serialize the resulting props as a JSON envelope:
+*      `{ pageProps: ... }` with `Content-Type: application/json`.
+*
+* Ported from Next.js:
+*   - `packages/next/src/server/normalizers/request/next-data.ts` — prefix/suffix matcher.
+*   - `packages/next/src/server/base-server.ts` (`handleNextDataRequest`) — pipeline normalization.
+*   - `packages/next/src/server/render.tsx` — JSON envelope emission (`isNextDataRequest`).
+*/
+const NEXT_DATA_PREFIX = "/_next/data/";
+const NEXT_DATA_SUFFIX = ".json";
+/**
+* Returns true if the pathname looks like a `_next/data` request, regardless
+* of buildId. Used by the request pipeline to short-circuit before middleware
+* even when the buildId is wrong (so we can still return a 404 JSON response).
+*/
+function isNextDataPathname(pathname) {
+	return pathname.startsWith(NEXT_DATA_PREFIX) && pathname.endsWith(NEXT_DATA_SUFFIX);
+}
+/**
+* WHATWG URL parsing removes TAB, LF, and CR characters. Reject paths where
+* that normalization would manufacture the internal Pages data namespace.
+*/
+function urlParserCreatesPagesDataPath(pathname) {
+	const parsedPathname = pathname.replaceAll("	", "").replaceAll("\n", "").replaceAll("\r", "");
+	return pathname !== parsedPathname && !isNextDataPathname(pathname) && isNextDataPathname(parsedPathname);
+}
+/**
+* Keep URL-parser-ignored characters encoded until route matching decodes the
+* captured parameter. Passing them literally to `new URL()` would remove them.
+*/
+function encodeUrlParserIgnoredCharacters(pathname) {
+	return pathname.replaceAll("	", "%09").replaceAll("\n", "%0A").replaceAll("\r", "%0D");
+}
+/**
+* Parse `/_next/data/<buildId>/<...page>.json` and return the normalized page
+* pathname. Returns `null` if the pathname does not match the pattern or if
+* the buildId segment does not match the server's buildId.
+*
+* The returned `pagePathname` is the page route path Next.js would render for
+* the equivalent HTML navigation — including any locale prefix, which is then
+* stripped by `resolvePagesI18nRequest` downstream.
+*
+* `/_next/data/<buildId>/about.json`         → `/about`
+* `/_next/data/<buildId>/en/about.json`      → `/en/about`
+* `/_next/data/<buildId>/index.json`         → `/`
+* `/_next/data/<buildId>/en.json`            → `/en`
+* `/_next/data/<wrong-id>/about.json`        → null
+* `/_next/data/<buildId>/about`              → null  (missing .json suffix)
+*/
+function parseNextDataPathname(pathname, buildId) {
+	if (!buildId) return null;
+	if (!isNextDataPathname(pathname)) return null;
+	const expectedPrefix = `${NEXT_DATA_PREFIX}${buildId}/`;
+	if (!pathname.startsWith(expectedPrefix)) return null;
+	const rest = pathname.slice(expectedPrefix.length, -5);
+	if (rest.length === 0) return null;
+	if (rest === "index") return { pagePathname: "/" };
+	if (rest.endsWith("/index")) return { pagePathname: `/${rest.slice(0, -6)}` };
+	if (rest.startsWith("index/")) return { pagePathname: `/${rest.slice(6)}` };
+	return { pagePathname: `/${rest}` };
+}
+function normalizeNextDataPagePathname(pagePathname, trailingSlash = false) {
+	if (!trailingSlash || pagePathname === "/" || pagePathname.endsWith("/")) return pagePathname;
+	return `${pagePathname}/`;
+}
+/**
+* Build the JSON envelope returned by `/_next/data/<buildId>/<page>.json`.
+* Mirrors Next.js' `RenderResult(JSON.stringify(props))` path in
+* `packages/next/src/server/render.tsx` (search for `isNextDataRequest`).
+*
+* The envelope is the outer `props` object the React tree would receive:
+*   { pageProps: {...}, /* optional locale data, redirect markers, etc. *\/ }
+*/
+function buildNextDataJsonResponse(pageProps, safeJsonStringify, init) {
+	return buildNextDataPropsJsonResponse({ pageProps }, safeJsonStringify, init);
+}
+/**
+* Build a `_next/data` JSON response from the full Pages props object returned
+* through `_app.getInitialProps`. Next.js serializes the same outer props
+* object that would be passed to `<App />`, so custom app-level props remain
+* siblings of `pageProps` in the data envelope.
+*/
+function buildNextDataPropsJsonResponse(props, safeJsonStringify, init) {
+	const body = safeJsonStringify(props);
+	return new Response(body, {
+		status: init?.status ?? 200,
+		statusText: init?.statusText,
+		headers: {
+			"Content-Type": "application/json",
+			...init?.headers
+		}
+	});
+}
+/**
+* Build the 404 response Next.js returns for an unknown `_next/data` page.
+* Next.js renders this as a normal 404 page, but the body shape that clients
+* see for a missing page-data endpoint is the literal string `"{ }"` for the
+* body and a 404 status with `application/json` so client-side hard-navigation
+* fallback fires (see `__N_SSP` handling in `router.ts`).
+*
+* We match Next.js' behavior: 404 status + JSON content type. The body is an
+* empty JSON object so clients that blindly call `res.json()` do not throw
+* before checking the status code.
+*/
+function buildNextDataNotFoundResponse() {
+	const headers = { "Content-Type": "application/json" };
+	const deploymentId = process.env.__VINEXT_DEPLOYMENT_ID || process.env.NEXT_DEPLOYMENT_ID;
+	if (deploymentId) headers[NEXTJS_DEPLOYMENT_ID_HEADER] = deploymentId;
+	return new Response("{}", {
+		status: 404,
+		headers
+	});
+}
+function buildMiddlewarePrefetchSkipResponse(matchedPathname) {
+	return new Response("{}", { headers: {
+		"Content-Type": "application/json",
+		"x-matched-path": matchedPathname,
+		[MIDDLEWARE_SKIP_HEADER]: "1",
+		"Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate"
+	} });
+}
+/**
+* Detect and normalize `/_next/data/<buildId>/<page>.json` requests in one
+* place so the Pages Router pipeline and middleware shim do not need to know
+* about the data-endpoint protocol.
+*
+* Returns:
+* - `isDataReq: false, notFoundResponse: null` — not a data request.
+* - `isDataReq: false, notFoundResponse: Response` — looks like a data URL but
+*   the buildId does not match; callers should return `notFoundResponse`
+*   immediately so stale clients fall back to a hard navigation.
+* - `isDataReq: true` — valid data request; `request` is re-pointed at the
+*   normalized page path, `normalizedPathname` carries the bare page path, and
+*   `search` carries the original query string for callers that need to
+*   preserve it.
+*
+* Extracted from `entries/pages-server-entry.ts` so both `renderPage` and
+* `runMiddleware` share a single implementation.
+*/
+function normalizePagesDataRequest(request, buildId, basePath = "", trailingSlash = false) {
+	const reqUrl = new URL(request.url);
+	const hadBasePath = !!basePath && hasBasePath(reqUrl.pathname, basePath);
+	const dataPathname = basePath ? stripBasePath(reqUrl.pathname, basePath) : reqUrl.pathname;
+	if (!isNextDataPathname(dataPathname)) return {
+		isDataReq: false,
+		request,
+		normalizedPathname: null,
+		search: "",
+		notFoundResponse: null
+	};
+	const dataMatch = buildId ? parseNextDataPathname(dataPathname, buildId) : null;
+	if (!dataMatch) return {
+		isDataReq: false,
+		request,
+		normalizedPathname: null,
+		search: "",
+		notFoundResponse: buildNextDataNotFoundResponse()
+	};
+	const pagePathname = normalizeNextDataPagePathname(dataMatch.pagePathname, trailingSlash);
+	const normalizedUrl = new URL(reqUrl);
+	normalizedUrl.pathname = hadBasePath ? addBasePathToPathname(pagePathname, basePath) : pagePathname;
+	return {
+		isDataReq: true,
+		request: new Request(normalizedUrl, request),
+		normalizedPathname: pagePathname,
+		search: reqUrl.search,
+		notFoundResponse: null
+	};
+}
+//#endregion
+export { buildMiddlewarePrefetchSkipResponse, buildNextDataJsonResponse, buildNextDataNotFoundResponse, buildNextDataPropsJsonResponse, encodeUrlParserIgnoredCharacters, isNextDataPathname, normalizeNextDataPagePathname, normalizePagesDataRequest, parseNextDataPathname, urlParserCreatesPagesDataPath };

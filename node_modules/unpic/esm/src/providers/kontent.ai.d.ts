@@ -1,0 +1,71 @@
+import type { ImageFormat, Operations, URLExtractor, URLGenerator, URLTransformer } from "../types.js";
+/**
+ * @see https://kontent.ai/learn/docs/apis/image-transformation-api
+ */
+export interface KontentAiOperations extends Operations<"gif" | "png8" | "pjpg"> {
+    /**
+     * Resize the image to a specified width in pixels.
+     * @type {number} Range: 1-8192
+     */
+    w?: number;
+    /**
+     * Resize the image to a specified height in pixels.
+     * @type {number} Range: 1-8192
+     */
+    h?: number;
+    /**
+     * Defines the fit mode to apply to the image.
+     * @type {('clip' | 'scale' | 'crop')}
+     */
+    fit?: "clip" | "scale" | "crop";
+    /**
+     * Select a rectangular region of the image to process.
+     * Format: x,y,width,height as either pixels or percentages.
+     * @type {string} Example: "0,0,100,100" or "0.1,0.1,0.5,0.5"
+     */
+    rect?: string;
+    /**
+     * Horizontal focal point for cropping.
+     * @type {number} Range: 0.0-1.0, Default is 0.5
+     */
+    "fp-x"?: number;
+    /**
+     * Vertical focal point for cropping.
+     * @type {number} Range: 0.0-1.0, Default is 0.5
+     */
+    "fp-y"?: number;
+    /**
+     * Focal point zoom level, where 1 is the original size.
+     * @type {number} Range: 1-100
+     */
+    "fp-z"?: number;
+    /**
+     * Background color for transparent areas.
+     * Accepts RGB or ARGB hex values.
+     * @type {string} Examples: "FFFFFF" (RGB), "FF00FF00" (ARGB)
+     */
+    bg?: string;
+    /**
+     * Image format conversion.
+     */
+    fm?: ImageFormat | "gif" | "png8" | "pjpg";
+    /**
+     * Quality of the output image for lossy formats (jpg, pjpg, webp).
+     * @type {number} Range: 0-100
+     */
+    q?: number;
+    /**
+     * Lossless compression for WebP format.
+     * @type {0 | 1 | boolean}
+     */
+    lossless?: 0 | 1 | boolean;
+    /**
+     * Automatically select the best format for the browser.
+     * @type {'format'}
+     */
+    auto?: "format";
+}
+export declare const generate: URLGenerator<"kontent.ai">;
+export declare const extract: URLExtractor<"kontent.ai">;
+export declare const transform: URLTransformer<"kontent.ai">;
+//# sourceMappingURL=kontent.ai.d.ts.map
