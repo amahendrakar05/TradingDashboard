@@ -16,28 +16,33 @@ if not exist "%ANALYZER%" (
   goto :failed
 )
 
-echo [1/4] Downloading and analyzing current market data...
+echo [1/5] Downloading and analyzing current market data...
 py "%ANALYZER%"
 if errorlevel 1 goto :failed
 
 echo.
-echo [2/4] Updating the website data...
+echo [2/5] Updating the website data...
 py "%SITE_DIR%update_dashboard.py"
 if errorlevel 1 goto :failed
 
 echo.
-echo [3/4] Publishing updated data to GitHub...
+echo [3/5] Updating news and articles...
+py "%SITE_DIR%update_articles.py"
+if errorlevel 1 goto :failed
+
+echo.
+echo [4/5] Publishing updated data to GitHub...
 git -C "%SITE_DIR%" rev-parse --is-inside-work-tree >nul 2>&1
 if errorlevel 1 (
   echo ERROR: The website folder is not a Git repository.
   goto :failed
 )
 
-git -C "%SITE_DIR%" add -- public/stocks.json
-git -C "%SITE_DIR%" diff --cached --quiet -- public/stocks.json
+git -C "%SITE_DIR%" add -A -- public
+git -C "%SITE_DIR%" diff --cached --quiet -- public
 if errorlevel 1 (
   for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH-mm"') do set "STAMP=%%i"
-  git -C "%SITE_DIR%" commit -m "Refresh stock analytics %STAMP%"
+  git -C "%SITE_DIR%" commit -m "Refresh stock analytics and articles %STAMP%"
   if errorlevel 1 goto :failed
 ) else (
   echo No stock-data changes were detected. Nothing new to publish.
@@ -47,7 +52,7 @@ git -C "%SITE_DIR%" push origin main
 if errorlevel 1 goto :failed
 
 echo.
-echo [4/4] Opening the published dashboard...
+echo [5/5] Opening the published website...
 start "" "https://amahendrakar05.github.io/TradingDashboard/"
 
 echo.
