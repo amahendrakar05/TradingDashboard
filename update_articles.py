@@ -30,8 +30,10 @@ def main():
         lines = text.splitlines()
         title = next((line.strip() for line in lines if line.strip()), path.stem)
         body_start = next((index for index, line in enumerate(lines) if line.strip()), 0) + 1
-        body = "\n".join(lines[body_start:]).strip()
-        preview = " ".join(line.strip() for line in lines[body_start:] if line.strip())[:240]
+        cleaned_lines = [re.sub(r"[ \t]+$", "", line).strip() if "\t" not in line else "\t".join(part.strip() for part in line.split("\t")) for line in lines[body_start:]]
+        body = "\n".join(cleaned_lines).strip()
+        body = re.sub(r"\n{3,}", "\n\n", body)
+        preview = re.sub(r"\s+", " ", body)[:240].strip()
         articles.append({
             "slug": slugify(title),
             "title": title,
