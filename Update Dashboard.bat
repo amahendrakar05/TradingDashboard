@@ -1,12 +1,12 @@
 @echo off
 setlocal
-title Update Market Signal Console
+title Update Market Signal Console and News
 
 set "ANALYZER=D:\Pyhton code\FINAL Scripts\1Extract S&P Data from Yahoo.py"
 set "SITE_DIR=%~dp0"
 
 echo ============================================================
-echo  MARKET SIGNAL CONSOLE - ONE CLICK UPDATE
+echo  MARKET SIGNAL CONSOLE + NEWS - ONE CLICK UPDATE
 echo ============================================================
 echo.
 
@@ -54,9 +54,11 @@ if errorlevel 1 goto :failed
 echo.
 echo [5/5] Opening the published website...
 start "" "https://amahendrakar05.github.io/TradingDashboard/"
+start "" "https://amahendrakar05.github.io/TradingDashboard/news.html"
 
 echo.
 echo Update complete.
+echo Stock data and News ^& Articles have been refreshed and published.
 echo GitHub Pages may take 1-5 minutes to deploy the new data.
 echo Press Ctrl+F5 in the browser after deployment to bypass cached data.
 echo.
