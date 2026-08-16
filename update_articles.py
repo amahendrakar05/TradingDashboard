@@ -19,13 +19,18 @@ def slugify(value):
     return value or "article"
 
 
+def article_key(value):
+    """Match filenames despite spaces, underscores, punctuation, or case."""
+    return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+
 def main():
     if not SOURCE.exists():
         raise SystemExit(f"ERROR: Article source folder not found: {SOURCE}")
 
     PUBLIC.mkdir(parents=True, exist_ok=True)
     ARTICLE_IMAGES.mkdir(parents=True, exist_ok=True)
-    articles = []
+    articles_by_name = {}
     for path in sorted(SOURCE.glob("*.txt"), key=lambda p: p.stat().st_mtime, reverse=True):
         text = path.read_text(encoding="utf-8-sig").strip()
         if not text:
@@ -37,7 +42,7 @@ def main():
         body = "\n".join(cleaned_lines).strip()
         body = re.sub(r"\n{3,}", "\n\n", body)
         preview = re.sub(r"\s+", " ", body)[:240].strip()
-        articles.append({
+        articles_by_name[article_key(path.stem)] = {
             "kind": "text",
             "slug": slugify(title),
             "title": title,
@@ -47,7 +52,7 @@ def main():
             "published": datetime.fromtimestamp(path.stat().st_mtime).astimezone().isoformat(timespec="seconds"),
             "category": "Education",
             "reading_minutes": max(1, round(len(body.split()) / 220)),
-        })
+        }
 
     for path in sorted(SOURCE.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
         if not path.is_file() or path.suffix.lower() not in IMAGE_EXTENSIONS:
@@ -57,18 +62,32 @@ def main():
         title = path.stem
         destination = ARTICLE_IMAGES / f"{slugify(title)}{path.suffix.lower()}"
         shutil.copy2(path, destination)
-        articles.append({
+        key = article_key(path.stem)
+        existing = articles_by_name.get(key)
+        image_url = f"public/articles/{destination.name}"
+        if existing:
+            existing["kind"] = "article"
+            existing["image"] = image_url
+            existing["source_files"] = [existing.pop("source_file"), path.name]
+            existing["published"] = max(
+                existing["published"],
+                datetime.fromtimestamp(path.stat().st_mtime).astimezone().isoformat(timespec="seconds"),
+            )
+            continue
+        articles_by_name[key] = {
             "kind": "image",
             "slug": slugify(title),
             "title": title,
             "preview": f"A visual market article from @TheWealthVolume: {title}.",
             "body": "",
-            "image": f"public/articles/{destination.name}",
+            "image": image_url,
             "source_file": path.name,
             "published": datetime.fromtimestamp(path.stat().st_mtime).astimezone().isoformat(timespec="seconds"),
             "category": "Visual Article",
             "reading_minutes": 1,
-        })
+        }
+
+    articles = list(articles_by_name.values())
 
     articles.sort(key=lambda article: article["published"], reverse=True)
 
